@@ -244,3 +244,10 @@ These commands are for the extra playful people. Use with caution.
 
 OVMS will eventually drain the 12V battery, but steps have been taken to minimize the drain. However, if you are going to leave the car for a fews days, it is recommended to unplug OVMS.
 
+---------
+Resources
+---------
+
+`Kia Soul EV CAN Message GoogleDoc <https://docs.google.com/spreadsheets/d/1YYlZ-IcTQlz-LzaYkHO-7a4SFM8QYs2BGNXiSU5_EwI/>`_
+
+
