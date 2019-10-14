@@ -51,6 +51,10 @@ static const OvmsVehicle::poll_pid_t obdii_polls[] =
     { 0x79b, 0x7bb, VEHICLE_POLL_TYPE_OBDIIGROUP, 0x01, {  0, 61, 61 } }, // bat [39/41]
     { 0x79b, 0x7bb, VEHICLE_POLL_TYPE_OBDIIGROUP, 0x02, {  0, 67, 67 } }, // battery voltages [196]
     { 0x79b, 0x7bb, VEHICLE_POLL_TYPE_OBDIIGROUP, 0x04, {  0,307,307 } }, // battery temperatures [14]
+    { 0x745, 0x765, VEHICLE_POLL_TYPE_OBDIIGROUP, 0x09, {  0, 71, 71 } }, // BCM: doors, controls [72]
+    { 0x744, 0x764, VEHICLE_POLL_TYPE_OBDIIGROUP, 0x10, {  0, 73, 73 } }, // HVAC: temp [49]
+    { 0x758, 0x778, VEHICLE_POLL_TYPE_OBDIIGROUP, 0x10, {  0,311,311 } }, // tyre pressures [8]
+    { 0x743, 0x763, VEHICLE_POLL_TYPE_OBDIIGROUP, 0x01, {  0, 37, 37 } }, // meter [128]
     { 0, 0, 0x00, 0x00, { 0, 0, 0 } }
   };
 
@@ -119,9 +123,9 @@ OvmsVehicleNissanLeaf::OvmsVehicleNissanLeaf()
   RegisterCanBus(1,CAN_MODE_ACTIVE,CAN_SPEED_500KBPS);
   RegisterCanBus(2,CAN_MODE_ACTIVE,CAN_SPEED_500KBPS);
   PollSetPidList(m_can2,obdii_polls);
-  PollSetState(0);
+  PollSetState(1);
 
-  MyConfig.RegisterParam("xnl", "Nissan Leaf", true, true);
+  MyConfig.RegisterParam("xnl", "Nissan Leaf active query", true, true);
   ConfigChanged(NULL);
 
 #ifdef CONFIG_OVMS_COMP_WEBSERVER
@@ -424,6 +428,42 @@ void OvmsVehicleNissanLeaf::PollReply_VIN(uint8_t reply_data[], uint16_t reply_l
   StandardMetrics.ms_v_vin->SetValue((char*)reply_data);
   }
 
+void OvmsVehicleNissanLeaf::PollReply_BCM(uint8_t reply_data[], uint16_t reply_len)
+  {
+  if (reply_len != 72)
+    {
+    ESP_LOGI(TAG, "PollReply_BCM: len=%d != 72", reply_len);
+    return;
+    }
+  }
+
+void OvmsVehicleNissanLeaf::PollReply_HVAC(uint8_t reply_data[], uint16_t reply_len)
+  {
+  if (reply_len != 49)
+    {
+    ESP_LOGI(TAG, "PollReply_HVAC: len=%d != 49", reply_len);
+    return;
+    }
+  }
+
+void OvmsVehicleNissanLeaf::PollReply_tyre(uint8_t reply_data[], uint16_t reply_len)
+  {
+  if (reply_len != 8)
+    {
+    ESP_LOGI(TAG, "PollReply_tyre: len=%d != 8", reply_len);
+    return;
+    }
+  }
+
+void OvmsVehicleNissanLeaf::PollReply_meter(uint8_t reply_data[], uint16_t reply_len)
+  {
+  if (reply_len != 128)
+    {
+    ESP_LOGI(TAG, "PollReply_meter: len=%d != 128", reply_len);
+    return;
+    }
+  }
+
 // Reassemble all pieces of a multi-frame reply.
 void OvmsVehicleNissanLeaf::IncomingPollReply(canbus* bus, uint16_t type, uint16_t pid, uint8_t* data, uint8_t length, uint16_t remain)
   {
@@ -466,6 +506,18 @@ void OvmsVehicleNissanLeaf::IncomingPollReply(canbus* bus, uint16_t type, uint16
         break;
       case 0x79a0081: // VIN
         PollReply_VIN(buf, bufpos);
+        break;
+      case 0x7650009: // BCM: doors, controls [72]
+        PollReply_BCM(buf, bufpos);
+        break;
+      case 0x7640010: // HVAC: temp, speed [49]
+        PollReply_HVAC(buf, bufpos);
+        break;
+      case 0x7780010: // tyre pressures [8]
+        PollReply_tyre(buf, bufpos);
+        break;
+      case 0x7630001: // instrument panel [128]
+        PollReply_meter(buf, bufpos);
         break;
       default:
         ESP_LOGI(TAG, "IncomingPollReply: unknown reply module|pid=%#x len=%d", id_pid, bufpos);
@@ -760,7 +812,7 @@ void OvmsVehicleNissanLeaf::IncomingFrameCan1(CAN_frame_t* p_frame)
         }
       }
       break;
-    case 0x5bf:
+    case 0x5bf: // Not present on Gen2
       if (d[4] == 0xb0)
         {
         // Quick Charging
