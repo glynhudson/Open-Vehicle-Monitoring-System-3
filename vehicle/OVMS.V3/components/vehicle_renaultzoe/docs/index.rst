@@ -4,7 +4,7 @@ Renault Zoe
 
 Vehicle Type: **RZ**
 
-The Renault Zoe will be documented here.
+Renault Zoe support is currently in beta. ZE20 and ZE40 models are supported by OVMS. 
 
 ----------------
 Support Overview
