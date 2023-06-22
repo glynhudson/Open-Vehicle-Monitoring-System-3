@@ -4,7 +4,7 @@ Renault Zoe
 
 Vehicle Type: **RZ**
 
-This vehicle type supports the Renault Zoe(PH1) and Kangoo(2011 - ~2019). The newer Zoe ph2 and Kangoo are not supported yet.
+This vehicle type supports the Renault Zoe(PH1) e.g ZE (24kWh) and ZE40 and Kangoo(2011 - ~2019).
 
 ----------------
 Support Overview
