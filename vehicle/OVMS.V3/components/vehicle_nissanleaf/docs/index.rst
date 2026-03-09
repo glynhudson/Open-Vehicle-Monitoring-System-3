@@ -93,7 +93,7 @@ Remote Climate Control
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 OVMS remote climate support will 'just work' on e-Nv200 Visia/Acenta which don't have a Nissan satnav headunit.
-For Tekna models which are fitted with a Nissan satnav headunit, follow the instructions below for a 2013-2016 LEAF to unplug the TCU
+For Tekna models which are fitted with a Nissan satnav headunit, the TCU must be unplugged. This is located just below the headunit. Pull of the trim around the headunit to access, `See photos <https://www.dropbox.com/scl/fo/0tihttnatwlgfsi0se3x0/ALGZtmAJ0-kMK6rJLMcGvdc?rlkey=pdoof1bg2621hxm8hfdrky07z&e=1&st=p5o2e49g&dl=0>`_.
 
 IMPORTANT: for remote climate to work on the e-NV200, the model year in OVMS should be set to 2015 regardless of the the actual model year of the vehicle. CAN writing also needs to be enabled.
 
